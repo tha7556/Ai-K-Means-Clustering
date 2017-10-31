@@ -36,6 +36,10 @@ public class KMeans {
 	}
 	public void run() {
 		int loops = 0;
+		ArrayList<ArrayList<Point>> centroids = new ArrayList<ArrayList<Point>>(k);
+		for(int i = 0; i < k; i++) {
+			centroids.add(new ArrayList<Point>());
+		}
 		while(true) {
 			loops ++;
 			for(Point point : points) {
@@ -51,24 +55,28 @@ public class KMeans {
 				clusters[index].addPoint(point);
 			}
 			double biggestChange = 0.0;
-			for(Cluster cluster : clusters) {
-				double change = cluster.updateCentroid();
+			for(int i = 0; i < clusters.length; i++) {
+				centroids.get(i).add(clusters[i].getCentroid());
+				double change = clusters[i].updateCentroid();
 				if(change > biggestChange)
 					biggestChange = change;
 			}
-			System.out.println(biggestChange);
+			System.out.println(loops +": "+ biggestChange);
 			if(biggestChange <= target) {
 				System.out.println("all done!");
 				break;
 			}
 		}
+		for(int i = 0; i < centroids.size(); i++) {
+			Point.writePointsToFile("Centroid"+(i+1)+".csv", centroids.get(i));
+		}
+		for(int i = 0; i < clusters.length; i++) {
+			Point.writePointsToFile("Cluster"+(i+1)+".csv", clusters[i].getPoints());
+		}
 	}
 	public static void main(String[] args) {
-		ArrayList<Point> points = new ArrayList<Point>(10);
-		Random r = new Random();
-		for(int i = 0; i < 10; i++)
-			points.add(new Point(r.nextDouble(),r.nextDouble()));
-		KMeans kmeans = new KMeans(3,.0001,points);
+		ArrayList<Point> points = Point.getPointsFromFile("xyz.txt");
+		KMeans kmeans = new KMeans(3,.000001,points);
 		kmeans.run();
 	}
 }

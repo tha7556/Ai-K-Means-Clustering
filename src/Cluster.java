@@ -28,8 +28,18 @@ public class Cluster {
 	public Point getCentroid() {
 		return centroid;
 	}
+	public void deletePoint(Point point) {
+		points.remove(point);
+	}
 	public void addPoint(Point point) {
+		if(point.getCluster() != null && !point.getCluster().equals(this)) {
+			point.getCluster().deletePoint(point);
+		}
 		points.add(point);
+		point.setCluster(this);
+	}
+	public ArrayList<Point> getPoints() {
+		return points;
 	}
 
 }
